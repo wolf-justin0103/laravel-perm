@@ -63,9 +63,9 @@ class Role extends Model implements RoleContract
      *
      * @param string $name
      *
-     * @throws RoleDoesNotExist
-     *
      * @return Role
+     *
+     * @throws RoleDoesNotExist
      */
     public static function findByName($name)
     {
