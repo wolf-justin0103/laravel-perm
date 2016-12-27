@@ -2,6 +2,7 @@
 
 namespace Spatie\Permission\Test;
 
+use File;
 use Illuminate\Database\Schema\Blueprint;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Spatie\Permission\Contracts\Permission;

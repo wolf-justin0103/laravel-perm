@@ -50,7 +50,7 @@ trait HasRoles
             $roles = $roles->toArray();
         }
 
-        if (!is_array($roles)) {
+        if (! is_array($roles)) {
             $roles = [$roles];
         }
 
@@ -69,8 +69,6 @@ trait HasRoles
                 }
             });
         });
-
-        return $query;
     }
 
     /**
@@ -147,7 +145,7 @@ trait HasRoles
             return false;
         }
 
-        return (bool) $roles->intersect($this->roles)->count();
+        return (bool)$roles->intersect($this->roles)->count();
     }
 
     /**
