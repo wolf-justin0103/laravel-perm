@@ -147,15 +147,6 @@ return [
      */
 
     'cache_expiration_time' => 60 * 24,
-
-    /*
-     * By default we'll make an entry in the application log when the permissions
-     * could not be loaded. Normally this only occurs while installing the packages.
-     *
-     * If for some reason you want to disable that logging, set this value to false.
-     */
-
-    'log_registration_exception' => true,
 ];
 ```
 
@@ -461,7 +452,7 @@ However, when using multiple guards they will act like namespaces for your permi
 
 ### Using permissions and roles with multiple guards
 
-By default the default guard (`config('auth.defaults.guard')`) will be used as the guard for new permissions and roles. When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
+By default the default guard (`config('auth.default.guard')`) will be used as the guard for new permissions and roles. When creating permissions and roles for specific guards you'll have to specify their `guard_name` on the model:
 
 ```php
 // Create a superadmin role for the admin users
@@ -543,6 +534,21 @@ public function __construct()
 {
     $this->middleware(['role:super-admin','permission:publish articles|edit articles']);
 }
+```
+
+### Catching role and permission failures
+If you want to override the default `403` response, you can catch the `UnauthorizedException` using your app's exception handler:
+
+```php
+public function render($request, Exception $exception)
+{
+    if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
+        // Code here ...
+    }
+
+    return parent::render($request, $exception);
+}
+
 ```
 
 ## Using artisan commands
