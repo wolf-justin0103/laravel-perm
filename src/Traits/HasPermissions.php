@@ -52,7 +52,7 @@ trait HasPermissions
     /**
      * Revoke the given permission.
      *
-     * @param \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Permission[]|string|string[] $permission
+     * @param \Spatie\Permission\Contracts\Permission|string $permission
      *
      * @return $this
      */
@@ -68,9 +68,9 @@ trait HasPermissions
     /**
      * @param string|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
      *
-     * @return \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Permission[]|\Illuminate\Support\Collection
+     * @return \Spatie\Permission\Contracts\Permission
      */
-    protected function getStoredPermission($permissions)
+    protected function getStoredPermission($permissions): Permission
     {
         if (is_string($permissions)) {
             return app(Permission::class)->findByName($permissions, $this->getDefaultGuardName());
@@ -79,7 +79,7 @@ trait HasPermissions
         if (is_array($permissions)) {
             return app(Permission::class)
                 ->whereIn('name', $permissions)
-                ->whereIn('guard_name', $this->getGuardNames())
+                ->whereId('guard_name', $this->getGuardNames())
                 ->get();
         }
 
