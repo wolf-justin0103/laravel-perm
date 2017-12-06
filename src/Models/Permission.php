@@ -58,13 +58,11 @@ class Permission extends Model implements PermissionContract
      */
     public function users(): MorphToMany
     {
-        $permissionsForeignKeyName = str_singular(config('permission.table_names.permissions')).'_id';
-        
         return $this->morphedByMany(
             getModelForGuard($this->attributes['guard_name']),
             'model',
             config('permission.table_names.model_has_permissions'),
-            $permissionsForeignKeyName,
+            'permission_id',
             'model_id'
         );
     }
@@ -87,6 +85,27 @@ class Permission extends Model implements PermissionContract
 
         if (! $permission) {
             throw PermissionDoesNotExist::create($name, $guardName);
+        }
+
+        return $permission;
+    }
+
+    /**
+     * Find or create permission by its name (and optionally guardName).
+     *
+     * @param string $name
+     * @param string|null $guardName
+     *
+     * @return \Spatie\Permission\Contracts\Permission
+     */
+    public static function findOrCreate(string $name, $guardName = null): PermissionContract
+    {
+        $guardName = $guardName ?? config('auth.defaults.guard');
+
+        $permission = static::getPermissions()->where('name', $name)->where('guard_name', $guardName)->first();
+
+        if (! $permission) {
+            return static::create(['guard_name' => $guardName, 'name' => $name]);
         }
 
         return $permission;
