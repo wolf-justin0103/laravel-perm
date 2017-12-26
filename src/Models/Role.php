@@ -59,13 +59,11 @@ class Role extends Model implements RoleContract
      */
     public function users(): MorphToMany
     {
-        $rolesForeignKeyName = str_singular(config('permission.table_names.roles')).'_id';
-
         return $this->morphedByMany(
             getModelForGuard($this->attributes['guard_name']),
             'model',
             config('permission.table_names.model_has_roles'),
-            $rolesForeignKeyName,
+            'role_id',
             'model_id'
         );
     }
@@ -93,7 +91,7 @@ class Role extends Model implements RoleContract
         return $role;
     }
 
-    public static function findById(int $id, $guardName = null): RoleContract
+    public static function findById(int $id, $guardName): RoleContract
     {
         $guardName = $guardName ?? config('auth.defaults.guard');
 

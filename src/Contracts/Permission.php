@@ -23,5 +23,5 @@ interface Permission
      *
      * @return Permission
      */
-    public static function findByName(string $name, $guardName): self;
+    public static function findByName(string $name, $guardName): Permission;
 }
