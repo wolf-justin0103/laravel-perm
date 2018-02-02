@@ -30,7 +30,6 @@ class MultipleGuardsTest extends TestCase
         $app['config']->set('auth.guards', [
             'web' => ['driver' => 'session', 'provider' => 'users'],
             'api' => ['driver' => 'jwt', 'provider' => 'users'],
-            'abc' => ['driver' => 'abc'],
         ]);
     }
 }
