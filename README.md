@@ -6,7 +6,7 @@
 <table>
    <tr>
       <td><img src="http://spatie.github.io/laravel-permission/sponsor-logo.png"></td>
-      <td>If you want to quickly add authentication and authorization to Laravel projects, feel free to check Auth0's Laravel SDK and free plan at <a href="https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=laravel-permission&utm_content=auth">https://auth0.com/overview</a>.</td>Laravelddd
+      <td>If you want to quickly add authentication and authorization to Laravel projects, feel free to check Auth0's Laravel SDK and free plan at <a href="https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=laravel-permission&utm_content=auth">https://auth0.com/overview</a>.</td>
    </tr>
 </table>
 
@@ -720,8 +720,8 @@ Two notes about Database Seeding:
 If you need to extend or replace the existing `Role` or `Permission` models you just need to
 keep the following things in mind:
 
-- Your `Role` model needs to implement the `Spatie\Permission\Contracts\Role` contract
-- Your `Permission` model needs to implement the `Spatie\Permission\Contracts\Permission` contract
+- Your `Role` model needs to extend the `Spatie\Permission\Models\Role` model
+- Your `Permission` model needs to extend the `Spatie\Permission\Models\Permission` model
 - You can publish the configuration with this command:
 
 ```bash
