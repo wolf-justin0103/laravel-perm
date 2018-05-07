@@ -20,18 +20,10 @@ class PermissionRegistrar
     /** @var string */
     protected $cacheKey = 'spatie.permission.cache';
 
-    /** @var string */
-    protected $permissionClass;
-
-    /** @var string */
-    protected $roleClass;
-
     public function __construct(Gate $gate, Repository $cache)
     {
         $this->gate = $gate;
         $this->cache = $cache;
-        $this->permissionClass = config('permission.models.permission');
-        $this->roleClass = config('permission.models.role');
     }
 
     public function registerPermissions(): bool
@@ -50,25 +42,17 @@ class PermissionRegistrar
 
     public function forgetCachedPermissions()
     {
-        $this->cache->forget($this->cacheKey);
+        $this->cache->tags($this->cacheKey)->flush();
     }
 
-    public function getPermissions(): Collection
+    public function getPermissions($params = null): Collection
     {
-        $permissionClass = $this->getPermissionClass();
-
-        return $this->cache->remember($this->cacheKey, config('permission.cache_expiration_time'), function () use ($permissionClass) {
-            return $permissionClass->with('roles')->get();
+        return $this->cache->tags($this->cacheKey)->remember($this->cacheKey.($params ? '.'.implode('.', array_values($params)) : ''), config('permission.cache_expiration_time'), function () use ($params) {
+            if ($params) {
+                return app(Permission::class)->where($params)->with('roles')->get();
+            } else {
+                return app(Permission::class)->with('roles')->get();
+            }
         });
-    }
-
-    public function getPermissionClass()
-    {
-        return app($this->permissionClass);
-    }
-
-    public function getRoleClass()
-    {
-        return app($this->roleClass);
     }
 }
