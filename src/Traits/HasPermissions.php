@@ -9,7 +9,6 @@ use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Contracts\Permission;
 use Spatie\Permission\Exceptions\GuardDoesNotMatch;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 
 trait HasPermissions
 {
@@ -33,7 +32,7 @@ trait HasPermissions
             config('permission.models.permission'),
             'model',
             config('permission.table_names.model_has_permissions'),
-            'model_id',
+            config('permission.column_names.model_morph_key'),
             'permission_id'
         );
     }
@@ -99,7 +98,7 @@ trait HasPermissions
     /**
      * Determine if the model may perform the given permission.
      *
-     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|\Spatie\Permission\Contracts\Permission $permission
      * @param string|null $guardName
      *
      * @return bool
@@ -118,10 +117,6 @@ trait HasPermissions
                 $permission,
                 $guardName ?? $this->getDefaultGuardName()
             );
-        }
-
-        if (! $permission instanceof Permission) {
-            throw new PermissionDoesNotExist;
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
@@ -186,7 +181,7 @@ trait HasPermissions
     /**
      * Determine if the model has the given permission.
      *
-     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|\Spatie\Permission\Contracts\Permission $permission
      *
      * @return bool
      */
@@ -204,10 +199,6 @@ trait HasPermissions
             if (! $permission) {
                 return false;
             }
-        }
-
-        if (! $permission instanceof Permission) {
-            return false;
         }
 
         return $this->permissions->contains('id', $permission->id);
