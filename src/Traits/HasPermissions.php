@@ -297,14 +297,12 @@ trait HasPermissions
 
         if ($model->exists) {
             $this->permissions()->sync($permissions, false);
-            $model->load('permissions');
         } else {
             $class = \get_class($model);
 
             $class::saved(
                 function ($model) use ($permissions) {
                     $model->permissions()->sync($permissions, false);
-                    $model->load('permissions');
                 });
         }
 
@@ -339,8 +337,6 @@ trait HasPermissions
         $this->permissions()->detach($this->getStoredPermission($permission));
 
         $this->forgetCachedPermissions();
-
-        $this->load('permissions');
 
         return $this;
     }
