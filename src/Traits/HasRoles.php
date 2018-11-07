@@ -139,6 +139,8 @@ trait HasRoles
     public function removeRole($role)
     {
         $this->roles()->detach($this->getStoredRole($role));
+
+        $this->load('roles');
     }
 
     /**
@@ -170,6 +172,10 @@ trait HasRoles
 
         if (is_string($roles)) {
             return $this->roles->contains('name', $roles);
+        }
+
+        if (is_int($roles)) {
+            return $this->roles->contains('id', $roles);
         }
 
         if ($roles instanceof Role) {
