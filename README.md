@@ -220,6 +220,13 @@ return [
          */
 
         'model_key' => 'name',
+
+        /*
+         * You may optionally indicate a specific cache driver to use for permission and
+         * role caching using any of the `store` drivers listed in the cache.php config
+         * file. Using 'default' here means to use the `default` set in cache.php.
+         */
+        'store' => 'default',
     ],
 ];
 ```
@@ -891,11 +898,6 @@ HOWEVER, if you manipulate permission/role data directly in the database instead
 To manually reset the cache for this package, you can run the following in your app code:
 ```php
 $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-```
-
-Or you can use an Artisan command:
-```bash
-php artisan permission:cache-reset
 ```
 
 
