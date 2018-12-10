@@ -263,11 +263,10 @@ $app->routeMiddleware([
 ]);
 ```
 
-As well as the config file, service provider, and cache alias:
+As well as the configuration and the service provider:
 
 ```php
 $app->configure('permission');
-$app->alias('cache', \Illuminate\Cache\CacheManager::class);  // if you don't have this already
 $app->register(Spatie\Permission\PermissionServiceProvider::class);
 ```
 
