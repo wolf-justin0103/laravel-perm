@@ -2,7 +2,6 @@
 
 namespace Spatie\Permission\Traits;
 
-use Illuminate\Support\Arr;
 use Spatie\Permission\Guard;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
@@ -97,7 +96,7 @@ trait HasPermissions
             $permissions = $permissions->all();
         }
 
-        $permissions = Arr::wrap($permissions);
+        $permissions = array_wrap($permissions);
 
         return array_map(function ($permission) {
             if ($permission instanceof Permission) {
@@ -428,8 +427,7 @@ trait HasPermissions
                     $object->permissions()->sync($permissions, false);
                     $object->load('permissions');
                     $modelLastFiredOn = $object;
-                }
-            );
+                });
         }
 
         $this->forgetCachedPermissions();
