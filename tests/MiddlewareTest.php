@@ -28,16 +28,7 @@ class MiddlewareTest extends TestCase
     }
 
     /** @test */
-    public function a_guest_cannot_access_a_route_protected_by_the_role_or_permission_middleware()
-    {
-        $this->assertEquals(
-            $this->runMiddleware(
-                $this->roleOrPermissionMiddleware, 'testRole'
-            ), 403);
-    }
-
-    /** @test */
-    public function a_guest_cannot_access_a_route_protected_by_permission_or_role_middleware_middleware()
+    public function a_guest_cannot_access_a_route_protected_by_the_role_middleware()
     {
         $this->assertEquals(
             $this->runMiddleware(
@@ -200,11 +191,6 @@ class MiddlewareTest extends TestCase
 
         $this->assertEquals(
             $this->runMiddleware($this->roleOrPermissionMiddleware, 'testRole|edit-articles'),
-            200
-        );
-
-        $this->assertEquals(
-            $this->runMiddleware($this->roleOrPermissionMiddleware, ['testRole', 'edit-articles']),
             200
         );
     }
