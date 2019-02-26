@@ -205,7 +205,7 @@ trait HasPermissions
             $key .= $this->getPermissionCacheString($permission);
         }
 
-        return md5($key);
+        return $key;
     }
 
     /**
