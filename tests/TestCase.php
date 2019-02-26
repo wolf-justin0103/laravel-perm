@@ -46,13 +46,6 @@ abstract class TestCase extends Orchestra
         $this->testAdminPermission = app(Permission::class)->find(4);
     }
 
-    public function tearDown()
-    {
-        $this->reloadPermissions();
-
-        parent::tearDown();
-    }
-
     /**
      * @param \Illuminate\Foundation\Application $app
      *
