@@ -35,6 +35,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
+        // Note: this also flushes the cache from within the migration
         $this->setUpDatabase($this->app);
 
         $this->testUser = User::first();
@@ -44,13 +45,6 @@ abstract class TestCase extends Orchestra
         $this->testAdmin = Admin::first();
         $this->testAdminRole = app(Role::class)->find(3);
         $this->testAdminPermission = app(Permission::class)->find(4);
-    }
-
-    public function tearDown()
-    {
-        $this->reloadPermissions();
-
-        parent::tearDown();
     }
 
     /**
@@ -129,7 +123,6 @@ abstract class TestCase extends Orchestra
         $app[Permission::class]->create(['name' => 'edit-news']);
         $app[Permission::class]->create(['name' => 'edit-blog']);
         $app[Permission::class]->create(['name' => 'admin-permission', 'guard_name' => 'admin']);
-        $app[Permission::class]->create(['name' => 'Edit News']);
     }
 
     /**
