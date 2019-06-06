@@ -2,9 +2,7 @@
 
 namespace Spatie\Permission\Test;
 
-use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Contracts\Role;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Contracts\Permission;
@@ -35,7 +33,6 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        // Note: this also flushes the cache from within the migration
         $this->setUpDatabase($this->app);
 
         $this->testUser = User::first();
@@ -81,8 +78,6 @@ abstract class TestCase extends Orchestra
 
         // Use test User model for users provider
         $app['config']->set('auth.providers.users.model', User::class);
-
-        $app['config']->set('cache.prefix', 'spatie_tests---');
     }
 
     /**
@@ -92,8 +87,6 @@ abstract class TestCase extends Orchestra
      */
     protected function setUpDatabase($app)
     {
-        $app['config']->set('permission.column_names.model_morph_key', 'model_test_id');
-
         $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('email');
@@ -104,11 +97,6 @@ abstract class TestCase extends Orchestra
             $table->increments('id');
             $table->string('email');
         });
-
-        if (Cache::getStore() instanceof \Illuminate\Cache\DatabaseStore ||
-            $app[PermissionRegistrar::class]->getCacheStore() instanceof \Illuminate\Cache\DatabaseStore) {
-            $this->createCacheTable();
-        }
 
         include_once __DIR__.'/../database/migrations/create_permission_tables.php.stub';
 
@@ -123,7 +111,6 @@ abstract class TestCase extends Orchestra
         $app[Permission::class]->create(['name' => 'edit-news']);
         $app[Permission::class]->create(['name' => 'edit-blog']);
         $app[Permission::class]->create(['name' => 'admin-permission', 'guard_name' => 'admin']);
-        $app[Permission::class]->create(['name' => 'Edit News']);
     }
 
     /**
@@ -134,12 +121,27 @@ abstract class TestCase extends Orchestra
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    public function createCacheTable()
+    /**
+     * Refresh the testUser.
+     */
+    public function refreshTestUser()
     {
-        Schema::create('cache', function ($table) {
-            $table->string('key')->unique();
-            $table->text('value');
-            $table->integer('expiration');
-        });
+        $this->testUser = $this->testUser->fresh();
+    }
+
+    /**
+     * Refresh the testAdmin.
+     */
+    public function refreshTestAdmin()
+    {
+        $this->testAdmin = $this->testAdmin->fresh();
+    }
+
+    /**
+     * Refresh the testUserPermission.
+     */
+    public function refreshTestUserPermission()
+    {
+        $this->testUserPermission = $this->testUserPermission->fresh();
     }
 }
