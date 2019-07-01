@@ -18,7 +18,7 @@ class Role extends Model implements RoleContract
     use HasPermissions;
     use RefreshesPermissionCache;
 
-    protected $guarded = ['id'];
+    public $guarded = ['id'];
 
     public function __construct(array $attributes = [])
     {
@@ -51,9 +51,7 @@ class Role extends Model implements RoleContract
     {
         return $this->belongsToMany(
             config('permission.models.permission'),
-            config('permission.table_names.role_has_permissions'),
-            'role_id',
-            'permission_id'
+            config('permission.table_names.role_has_permissions')
         );
     }
 
@@ -67,7 +65,7 @@ class Role extends Model implements RoleContract
             'model',
             config('permission.table_names.model_has_roles'),
             'role_id',
-            config('permission.column_names.model_morph_key')
+            'model_id'
         );
     }
 
@@ -122,7 +120,7 @@ class Role extends Model implements RoleContract
         $role = static::where('name', $name)->where('guard_name', $guardName)->first();
 
         if (! $role) {
-            return static::query()->create(['name' => $name, 'guard_name' => $guardName]);
+            return static::create(['name' => $name, 'guard_name' => $guardName]);
         }
 
         return $role;
@@ -139,14 +137,12 @@ class Role extends Model implements RoleContract
      */
     public function hasPermissionTo($permission): bool
     {
-        $permissionClass = $this->getPermissionClass();
-
         if (is_string($permission)) {
-            $permission = $permissionClass->findByName($permission, $this->getDefaultGuardName());
+            $permission = app(Permission::class)->findByName($permission, $this->getDefaultGuardName());
         }
 
         if (is_int($permission)) {
-            $permission = $permissionClass->findById($permission, $this->getDefaultGuardName());
+            $permission = app(Permission::class)->findById($permission, $this->getDefaultGuardName());
         }
 
         if (! $this->getGuardNames()->contains($permission->guard_name)) {
