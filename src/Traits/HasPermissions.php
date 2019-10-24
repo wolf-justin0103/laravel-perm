@@ -263,10 +263,17 @@ trait HasPermissions
      */
     public function getPermissionsViaRoles(): Collection
     {
-        return $this->loadMissing('roles', 'roles.permissions')
-            ->roles->flatMap(function ($role) {
-                return $role->permissions;
-            })->sort()->values();
+        $relationships = ['roles', 'roles.permissions'];
+
+        if (method_exists($this, 'loadMissing')) {
+            $this->loadMissing($relationships);
+        } else {
+            $this->load($relationships);
+        }
+
+        return $this->roles->flatMap(function ($role) {
+            return $role->permissions;
+        })->sort()->values();
     }
 
     /**
