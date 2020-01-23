@@ -177,7 +177,9 @@ trait HasPermissions
      */
     public function hasAnyPermission(...$permissions): bool
     {
-        $permissions = collect($permissions)->flatten();
+        if (is_array($permissions[0])) {
+            $permissions = $permissions[0];
+        }
 
         foreach ($permissions as $permission) {
             if ($this->checkPermissionTo($permission)) {
@@ -198,7 +200,9 @@ trait HasPermissions
      */
     public function hasAllPermissions(...$permissions): bool
     {
-        $permissions = collect($permissions)->flatten();
+        if (is_array($permissions[0])) {
+            $permissions = $permissions[0];
+        }
 
         foreach ($permissions as $permission) {
             if (! $this->hasPermissionTo($permission)) {
