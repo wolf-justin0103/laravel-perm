@@ -8,9 +8,13 @@ use Spatie\Permission\Contracts\Role;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Spatie\Permission\Contracts\Permission;
 use Illuminate\Contracts\Auth\Access\Authorizable;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
 
 class PermissionRegistrar
 {
+    /** @var \Illuminate\Contracts\Auth\Access\Gate */
+    protected $gate;
+
     /** @var \Illuminate\Contracts\Cache\Repository */
     protected $cache;
 
@@ -38,10 +42,12 @@ class PermissionRegistrar
     /**
      * PermissionRegistrar constructor.
      *
+     * @param \Illuminate\Contracts\Auth\Access\Gate $gate
      * @param \Illuminate\Cache\CacheManager $cacheManager
      */
-    public function __construct(CacheManager $cacheManager)
+    public function __construct(Gate $gate, CacheManager $cacheManager)
     {
+        $this->gate = $gate;
         $this->permissionClass = config('permission.models.permission');
         $this->roleClass = config('permission.models.role');
 
@@ -52,6 +58,13 @@ class PermissionRegistrar
     protected function initializeCache()
     {
         self::$cacheExpirationTime = config('permission.cache.expiration_time', config('permission.cache_expiration_time'));
+
+        if (app()->version() <= '5.5') {
+            if (self::$cacheExpirationTime instanceof \DateInterval) {
+                $interval = self::$cacheExpirationTime;
+                self::$cacheExpirationTime = $interval->m * 30 * 60 * 24 + $interval->d * 60 * 24 + $interval->h * 60 + $interval->i;
+            }
+        }
 
         self::$cacheKey = config('permission.cache.key');
         self::$cacheModelKey = config('permission.cache.model_key');
@@ -79,15 +92,17 @@ class PermissionRegistrar
 
     /**
      * Register the permission check method on the gate.
-     * We resolve the Gate fresh here, for benefit of long-running instances.
      *
      * @return bool
      */
     public function registerPermissions(): bool
     {
-        app(Gate::class)->before(function (Authorizable $user, string $ability) {
-            if (method_exists($user, 'checkPermissionTo')) {
-                return $user->checkPermissionTo($ability) ?: null;
+        $this->gate->before(function (Authorizable $user, string $ability) {
+            try {
+                if (method_exists($user, 'hasPermissionTo')) {
+                    return $user->hasPermissionTo($ability) ?: null;
+                }
+            } catch (PermissionDoesNotExist $e) {
             }
         });
 

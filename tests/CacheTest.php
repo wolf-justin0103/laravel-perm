@@ -196,10 +196,10 @@ class CacheTest extends TestCase
         $this->assertQueryCount($this->cache_init_count + $this->cache_load_count + $this->cache_run_count);
 
         $this->resetQueryCount();
-        $actual = $this->testUser->getAllPermissions()->pluck('name')->sort()->values();
+        $actual = $this->testUser->getAllPermissions()->pluck('name');
         $this->assertEquals($actual, collect($expected));
 
-        $this->assertQueryCount(2);
+        $this->assertQueryCount(method_exists($this->testUser, 'loadMissing') ? 2 : 3);
     }
 
     /** @test */

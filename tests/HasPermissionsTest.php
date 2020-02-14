@@ -164,9 +164,7 @@ class HasPermissionsTest extends TestCase
     {
         $user = User::create(['email' => 'user1@test.com']);
 
-        $this->expectException(PermissionDoesNotExist::class);
-
-        $user->hasDirectPermission(new \stdClass());
+        $this->assertFalse($user->hasDirectPermission(new \stdClass()));
     }
 
     /** @test */
@@ -174,9 +172,7 @@ class HasPermissionsTest extends TestCase
     {
         $user = User::create(['email' => 'user1@test.com']);
 
-        $this->expectException(PermissionDoesNotExist::class);
-
-        $user->hasDirectPermission(null);
+        $this->assertFalse($user->hasDirectPermission(null));
     }
 
     /** @test */
@@ -376,7 +372,7 @@ class HasPermissionsTest extends TestCase
 
         $this->assertEquals(
             collect(['edit-articles', 'edit-news']),
-            $this->testUser->getAllPermissions()->pluck('name')->sort()->values()
+            $this->testUser->getAllPermissions()->pluck('name')
         );
     }
 
@@ -500,5 +496,20 @@ class HasPermissionsTest extends TestCase
             collect(['edit-news', 'edit-articles']),
             $this->testUser->getPermissionNames()
         );
+    }
+
+    /** @test */
+    public function it_can_check_many_direct_permissions()
+    {
+        $this->testUser->givePermissionTo(['edit-articles', 'edit-news']);
+        $this->assertTrue($this->testUser->hasAllDirectPermissions(['edit-news', 'edit-articles']));
+        $this->assertFalse($this->testUser->hasAllDirectPermissions(['edit-articles', 'edit-news', 'edit-blog']));
+    }
+
+    /** @test */
+    public function it_can_check_if_there_is_any_of_the_direct_permissions_given()
+    {
+        $this->testUser->givePermissionTo(['edit-articles', 'edit-news']);
+        $this->assertTrue($this->testUser->hasAnyDirectPermission(['edit-news', 'edit-blog']));
     }
 }

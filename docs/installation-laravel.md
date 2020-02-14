@@ -20,24 +20,28 @@ The service provider will automatically get registered. Or you may manually add 
 ];
 ```
 
-You should publish [the migration](https://github.com/spatie/laravel-permission/blob/master/database/migrations/create_permission_tables.php.stub) and [the `config/permission.php` config file](https://github.com/spatie/laravel-permission/blob/master/config/permission.php) with:
+You must publish [the migration](https://github.com/spatie/laravel-permission/blob/master/database/migrations/create_permission_tables.php.stub) with:
 
 ```bash
-php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --tag="migrations"
 ```
 
 If you're using UUIDs or GUIDs for your `User` models you can update the `create_permission_tables.php` migration and replace `$table->unsignedBigInteger($columnNames['model_morph_key'])` with `$table->uuid($columnNames['model_morph_key'])`.
 For consistency, you can also update the package configuration file to use the `model_uuid` column name instead of the default `model_id` column.
 
-After the config and migration have been published and configured, you can create the role- and permission-tables by running the migrations:
+After the migration has been published you can create the role- and permission-tables by running the migrations:
 
 ```bash
 php artisan migrate
 ```
 
-### Default config file contents
+You can publish the config file with:
 
-When published, config file initially contains:
+```bash
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --tag="config"
+```
+
+When published, [the `config/permission.php` config file](https://github.com/spatie/laravel-permission/blob/master/config/permission.php) initially contains:
 
 ```php
 return [

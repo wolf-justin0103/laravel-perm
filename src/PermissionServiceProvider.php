@@ -26,12 +26,14 @@ class PermissionServiceProvider extends ServiceProvider
             $this->registerMacroHelpers();
         }
 
-        $this->commands([
-            Commands\CacheReset::class,
-            Commands\CreateRole::class,
-            Commands\CreatePermission::class,
-            Commands\Show::class,
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Commands\CacheReset::class,
+                Commands\CreateRole::class,
+                Commands\CreatePermission::class,
+                Commands\Show::class,
+            ]);
+        }
 
         $this->registerModelBindings();
 

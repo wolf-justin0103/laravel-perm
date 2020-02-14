@@ -19,13 +19,13 @@ cp vendor/spatie/laravel-permission/config/permission.php config/permission.php
 cp vendor/spatie/laravel-permission/database/migrations/create_permission_tables.php.stub database/migrations/2018_01_01_000000_create_permission_tables.php
 ```
 
-You will also need the `config/auth.php` file. If you don't already have it, copy it from the vendor folder:
+You will also need to create another configuration file at `config/auth.php`. Get it on the Laravel repository or just run the following command:
 
 ```bash
-cp vendor/laravel/lumen-framework/config/auth.php config/auth.php
+curl -Ls https://raw.githubusercontent.com/laravel/lumen-framework/5.7/config/auth.php -o config/auth.php
 ```
 
-Then, in `bootstrap/app.php`, uncomment the `auth` middleware, and register this package's middleware:
+Then, in `bootstrap/app.php`, register the middlewares:
 
 ```php
 $app->routeMiddleware([
@@ -35,7 +35,7 @@ $app->routeMiddleware([
 ]);
 ```
 
-Also in `bootstrap/app.php` register the config file, service provider, and cache alias:
+Also register the config file, service provider, and cache alias:
 
 ```php
 $app->configure('permission');
@@ -43,19 +43,8 @@ $app->alias('cache', \Illuminate\Cache\CacheManager::class);  // if you don't ha
 $app->register(Spatie\Permission\PermissionServiceProvider::class);
 ```
 
-If you are using guards you will need to uncomment the AuthServiceProvider line:
-```php
-$app->register(App\Providers\AuthServiceProvider::class);
-```
-
-Now, ensure your database configuration is set.
-
-Then run the migrations:
+Now, run your migrations:
 
 ```bash
 php artisan migrate
 ```
-
-
-NOTE: Remember that Laravel's authorization layer requires that your `User` model implement the `Illuminate\Contracts\Auth\Access\Authorizable` contract. In Lumen you will then also need to use the `Laravel\Lumen\Auth\Authorizable` trait.
-
