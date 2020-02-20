@@ -5,7 +5,6 @@ namespace Spatie\Permission\Traits;
 use Spatie\Permission\Guard;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
-use Spatie\Permission\WildcardPermission;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Contracts\Permission;
 use Spatie\Permission\Exceptions\GuardDoesNotMatch;
@@ -114,21 +113,10 @@ trait HasPermissions
         $permissionClass = $this->getPermissionClass();
 
         if (is_string($permission)) {
-            try {
-                $permission = $permissionClass->findByName(
-                    $permission,
-                    $guardName ?? $this->getDefaultGuardName()
-                );
-            } catch (PermissionDoesNotExist $e) {
-                // the permission as string is not present in the database
-                // so check wildcard permission if enabled in config
-                // Use sensitive default for backwards compatibility
-                if (config('permission.enable_wildcard_permission', false)) {
-                    return $this->hasWildcardPermission($permission);
-                }
-
-                throw new PermissionDoesNotExist();
-            }
+            $permission = $permissionClass->findByName(
+                $permission,
+                $guardName ?? $this->getDefaultGuardName()
+            );
         }
 
         if (is_int($permission)) {
@@ -143,28 +131,6 @@ trait HasPermissions
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
-    }
-
-    /**
-     * Validates a wildcard permission against all permissions of a user.
-     *
-     * @param string $permission
-     *
-     * @return bool
-     */
-    protected function hasWildcardPermission(string $permission): bool
-    {
-        $permissionToVerify = new WildcardPermission($permission);
-
-        foreach ($this->getAllPermissions() as $permission) {
-            $permission = new WildcardPermission($permission->name);
-
-            if ($permission->implies($permissionToVerify)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
