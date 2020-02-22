@@ -2,9 +2,12 @@
 
 namespace Spatie\Permission\Traits;
 
+use Spatie\Permission\Exceptions\WildcardPermissionInvalidArgument;
+use Spatie\Permission\Exceptions\WildcardPermissionNotProperlyFormatted;
 use Spatie\Permission\Guard;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\Permission\WildcardPermission;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Contracts\Permission;
 use Spatie\Permission\Exceptions\GuardDoesNotMatch;
@@ -110,6 +113,10 @@ trait HasPermissions
      */
     public function hasPermissionTo($permission, $guardName = null): bool
     {
+        if (config('permission.enable_wildcard_permission', false)) {
+            return $this->hasWildcardPermission($permission, $guardName);
+        }
+
         $permissionClass = $this->getPermissionClass();
 
         if (is_string($permission)) {
@@ -126,11 +133,50 @@ trait HasPermissions
             );
         }
 
-        if (! $permission instanceof Permission) {
+        if (!$permission instanceof Permission) {
             throw new PermissionDoesNotExist;
         }
 
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
+    }
+
+    /**
+     * Validates a wildcard permission against all permissions of a user.
+     *
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|null $guardName
+     *
+     * @return bool
+     */
+    protected function hasWildcardPermission($permission, $guardName = null): bool
+    {
+        $guardName = $guardName ?? $this->getDefaultGuardName();
+
+        if (is_int($permission)) {
+            $permission = $this->getPermissionClass()->findById($permission, $guardName);
+        }
+
+        if ($permission instanceof Permission) {
+            $permission = $permission->name;
+        }
+
+        if (! is_string($permission)) {
+            throw WildcardPermissionInvalidArgument::create();
+        }
+
+        foreach ($this->getAllPermissions() as $userPermission) {
+            if ($guardName !== $userPermission->guard_name) {
+                continue;
+            }
+
+            $userPermission = new WildcardPermission($userPermission->name);
+
+            if ($userPermission->implies($permission)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
