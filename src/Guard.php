@@ -15,11 +15,7 @@ class Guard
     public static function getNames($model): Collection
     {
         if (is_object($model)) {
-            if (\method_exists($model, 'guardName')) {
-                $guardName = $model->guardName();
-            } else {
-                $guardName = $model->guard_name ?? null;
-            }
+            $guardName = $model->guard_name ?? null;
         }
 
         if (! isset($guardName)) {
