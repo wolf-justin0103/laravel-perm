@@ -25,11 +25,8 @@ class Role extends Model implements RoleContract
         $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');
 
         parent::__construct($attributes);
-    }
 
-    public function getTable()
-    {
-        return config('permission.table_names.roles', parent::getTable());
+        $this->setTable(config('permission.table_names.roles'));
     }
 
     public static function create(array $attributes = [])

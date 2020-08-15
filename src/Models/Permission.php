@@ -26,11 +26,8 @@ class Permission extends Model implements PermissionContract
         $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');
 
         parent::__construct($attributes);
-    }
 
-    public function getTable()
-    {
-        return config('permission.table_names.permissions', parent::getTable());
+        $this->setTable(config('permission.table_names.permissions'));
     }
 
     public static function create(array $attributes = [])
