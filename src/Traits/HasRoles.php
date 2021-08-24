@@ -44,7 +44,7 @@ trait HasRoles
             'model',
             config('permission.table_names.model_has_roles'),
             config('permission.column_names.model_morph_key'),
-            PermissionRegistrar::$pivotRole
+            'role_id'
         );
     }
 
@@ -120,6 +120,9 @@ trait HasRoles
 
             $class::saved(
                 function ($object) use ($roles, $model) {
+                    if ($model->getKey() != $object->getKey()) {
+                        return;
+                    }
                     $model->roles()->sync($roles, false);
                     $model->load('roles');
                 }

@@ -47,7 +47,7 @@ trait HasPermissions
             'model',
             config('permission.table_names.model_has_permissions'),
             config('permission.column_names.model_morph_key'),
-            PermissionRegistrar::$pivotPermission
+            'permission_id'
         );
     }
 
@@ -348,6 +348,9 @@ trait HasPermissions
 
             $class::saved(
                 function ($object) use ($permissions, $model) {
+                    if ($model->getKey() != $object->getKey()) {
+                        return;
+                    }
                     $model->permissions()->sync($permissions, false);
                     $model->load('permissions');
                 }
