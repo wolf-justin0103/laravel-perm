@@ -3,9 +3,7 @@
 namespace Spatie\Permission\Test;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Spatie\Permission\Contracts\Permission;
@@ -36,18 +34,12 @@ abstract class TestCase extends Orchestra
     /** @var bool */
     protected $useCustomModels = false;
 
-    /** @var bool */
-    protected $hasTeams = false;
-
     public function setUp(): void
     {
         parent::setUp();
 
         // Note: this also flushes the cache from within the migration
         $this->setUpDatabase($this->app);
-        if ($this->hasTeams) {
-            $this->setPermissionsTeamId(1);
-        }
 
         $this->testUser = User::first();
         $this->testUserRole = app(Role::class)->find(1);
@@ -56,8 +48,6 @@ abstract class TestCase extends Orchestra
         $this->testAdmin = Admin::first();
         $this->testAdminRole = app(Role::class)->find(3);
         $this->testAdminPermission = app(Permission::class)->find(4);
-
-        $this->setUpRoutes();
     }
 
     /**
@@ -79,22 +69,14 @@ abstract class TestCase extends Orchestra
      */
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('permission.teams', $this->hasTeams);
-        $app['config']->set('permission.testing', true); //fix sqlite
-        $app['config']->set('permission.column_names.model_morph_key', 'model_test_id');
-        $app['config']->set('permission.column_names.team_foreign_key', 'team_test_id');
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
         ]);
-        $app['config']->set('permission.column_names.role_pivot_key', 'role_test_id');
-        $app['config']->set('permission.column_names.permission_pivot_key', 'permission_test_id');
-        $app['config']->set('view.paths', [__DIR__.'/resources/views']);
 
-        // ensure api guard exists (required since Laravel 8.55)
-        $app['config']->set('auth.guards.api', ['driver' => 'session', 'provider' => 'users']);
+        $app['config']->set('view.paths', [__DIR__.'/resources/views']);
 
         // Set-up admin guard
         $app['config']->set('auth.guards.admin', ['driver' => 'session', 'provider' => 'admins']);
@@ -116,6 +98,8 @@ abstract class TestCase extends Orchestra
      */
     protected function setUpDatabase($app)
     {
+        $app['config']->set('permission.column_names.model_morph_key', 'model_test_id');
+
         $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('email');
@@ -156,32 +140,12 @@ abstract class TestCase extends Orchestra
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
-    /**
-     * Change the team_id
-     */
-    protected function setPermissionsTeamId(int $id)
-    {
-        app(PermissionRegistrar::class)->setPermissionsTeamId($id);
-    }
-
     public function createCacheTable()
     {
         Schema::create('cache', function ($table) {
             $table->string('key')->unique();
             $table->text('value');
             $table->integer('expiration');
-        });
-    }
-
-    /**
-     * Create routes to test authentication with guards.
-     */
-    public function setUpRoutes(): void
-    {
-        Route::middleware('auth:api')->get('/check-api-guard-permission', function (Request $request) {
-            return [
-                 'status' => $request->user()->hasPermissionTo('do_that'),
-             ];
         });
     }
 }

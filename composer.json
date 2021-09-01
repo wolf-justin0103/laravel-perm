@@ -51,10 +51,6 @@
             "providers": [
                 "Spatie\\Permission\\PermissionServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-main": "5.x-dev",
-            "dev-master": "5.x-dev"
         }
     },
     "scripts": {

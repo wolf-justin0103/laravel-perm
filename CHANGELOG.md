@@ -2,17 +2,6 @@
 
 All notable changes to `laravel-permission` will be documented in this file
 
-## 5.1.0 - 2021-08-31
-- No longer flush cache on User role/perm assignment changes #1832
-  NOTE: You should test your app to be sure that you don't accidentally have deep dependencies on cache resets happening automatically in these cases.
-  ALSO NOTE: If you have added custom code which depended on these flush operations, you may need to add your own cache-reset calls.
-
-## 5.0.0 - 2021-08-31
-- Change default-guard-lookup to prefer current user's guard (see BC note in #1817 )
-- Teams/Groups feature (see docs, or PR #1804)
-- Customized pivots instead of `role_id`,`permission_id` #1823
-
-
 ## 4.4.0 - 2021-08-28
 - Avoid BC break (removed interface change) on cache change added in 4.3.0 #1826
 - Made cache even smaller #1826
@@ -198,8 +187,8 @@ https://github.com/laravel/framework/commit/fd6eb89b62ec09df1ffbee164831a827e83f
 The following changes are not "breaking", but worth making the updates to your app for consistency.
 
 1. Config file: The `config/permission.php` file changed to move cache-related settings into a sub-array. **You should review the changes and merge the updates into your own config file.** Specifically the `expiration_time` value has moved into a sub-array entry, and the old top-level entry is no longer used.
-See the original config file here: 
-https://github.com/spatie/laravel-permission/blob/main/config/permission.php
+See the master config file here: 
+https://github.com/spatie/laravel-permission/blob/master/config/permission.php
 
 2. Cache Resets: If your `app` or `tests` are clearing the cache by specifying the cache key, **it is better to use the built-in forgetCachedPermissions() method** so that it properly handles tagged cache entries. Here is the recommended change:
 ```diff
