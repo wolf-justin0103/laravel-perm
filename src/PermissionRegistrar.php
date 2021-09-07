@@ -26,8 +26,23 @@ class PermissionRegistrar
     /** @var \Illuminate\Database\Eloquent\Collection */
     protected $permissions;
 
+    /** @var string */
+    public static $pivotRole;
+
+    /** @var string */
+    public static $pivotPermission;
+
     /** @var \DateInterval|int */
     public static $cacheExpirationTime;
+
+    /** @var bool */
+    public static $teams;
+
+    /** @var string */
+    public static $teamsKey;
+
+    /** @var int */
+    protected $teamId = null;
 
     /** @var string */
     public static $cacheKey;
@@ -53,7 +68,13 @@ class PermissionRegistrar
     {
         self::$cacheExpirationTime = config('permission.cache.expiration_time') ?: \DateInterval::createFromDateString('24 hours');
 
+        self::$teams = config('permission.teams', false);
+        self::$teamsKey = config('permission.column_names.team_foreign_key');
+
         self::$cacheKey = config('permission.cache.key');
+
+        self::$pivotRole = config('permission.column_names.role_pivot_key') ?: 'role_id';
+        self::$pivotPermission = config('permission.column_names.permission_pivot_key') ?: 'permission_id';
 
         $this->cache = $this->getCacheStoreFromConfig();
     }
@@ -75,6 +96,21 @@ class PermissionRegistrar
         }
 
         return $this->cacheManager->store($cacheDriver);
+    }
+
+    /**
+     * Set the team id for teams/groups support, this id is used when querying permissions/roles
+     *
+     * @param int $id
+     */
+    public function setPermissionsTeamId(?int $id)
+    {
+        $this->teamId = $id;
+    }
+
+    public function getPermissionsTeamId(): ?int
+    {
+        return $this->teamId;
     }
 
     /**
