@@ -189,8 +189,6 @@ trait HasRoles
      */
     public function hasRole($roles, string $guard = null): bool
     {
-        $this->loadMissing('roles');
-
         if (is_string($roles) && false !== strpos($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
         }
@@ -250,8 +248,6 @@ trait HasRoles
      */
     public function hasAllRoles($roles, string $guard = null): bool
     {
-        $this->loadMissing('roles');
-
         if (is_string($roles) && false !== strpos($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
         }
@@ -286,8 +282,6 @@ trait HasRoles
      */
     public function hasExactRoles($roles, string $guard = null): bool
     {
-        $this->loadMissing('roles');
-
         if (is_string($roles) && false !== strpos($roles, '|')) {
             $roles = $this->convertPipeToArray($roles);
         }
@@ -317,8 +311,6 @@ trait HasRoles
 
     public function getRoleNames(): Collection
     {
-        $this->loadMissing('roles');
-
         return $this->roles->pluck('name');
     }
 
