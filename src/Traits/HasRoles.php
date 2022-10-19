@@ -24,10 +24,7 @@ trait HasRoles
                 return;
             }
 
-            $teams = PermissionRegistrar::$teams;
-            PermissionRegistrar::$teams = false;
             $model->roles()->detach();
-            PermissionRegistrar::$teams = $teams;
         });
     }
 
