@@ -64,7 +64,7 @@ class Permission extends Model implements PermissionContract
     public function users(): BelongsToMany
     {
         return $this->morphedByMany(
-            getModelForGuard($this->attributes['guard_name'] ?? config('auth.defaults.guard')),
+            getModelForGuard($this->attributes['guard_name']),
             'model',
             config('permission.table_names.model_has_permissions'),
             PermissionRegistrar::$pivotPermission,
