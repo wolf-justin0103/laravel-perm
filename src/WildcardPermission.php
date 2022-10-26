@@ -23,7 +23,7 @@ class WildcardPermission
     protected $parts;
 
     /**
-     * @param  string  $permission
+     * @param string $permission
      */
     public function __construct(string $permission)
     {
@@ -34,7 +34,8 @@ class WildcardPermission
     }
 
     /**
-     * @param  string|WildcardPermission  $permission
+     * @param string|WildcardPermission $permission
+     *
      * @return bool
      */
     public function implies($permission): bool
@@ -70,8 +71,9 @@ class WildcardPermission
     }
 
     /**
-     * @param  Collection  $part
-     * @param  Collection  $otherPart
+     * @param Collection $part
+     * @param Collection $otherPart
+     *
      * @return bool
      */
     protected function containsAll(Collection $part, Collection $otherPart): bool

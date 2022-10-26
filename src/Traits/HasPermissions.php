@@ -63,8 +63,9 @@ trait HasPermissions
     /**
      * Scope the model query to certain permissions only.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopePermission(Builder $query, $permissions): Builder
@@ -92,9 +93,9 @@ trait HasPermissions
     }
 
     /**
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
-     * @return array
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
      *
+     * @return array
      * @throws \Spatie\Permission\Exceptions\PermissionDoesNotExist
      */
     protected function convertToPermissionModels($permissions): array
@@ -116,9 +117,9 @@ trait HasPermissions
     /**
      * Find a permission.
      *
-     * @param  string|int|\Spatie\Permission\Contracts\Permission  $permission
-     * @return \Spatie\Permission\Contracts\Permission
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
      *
+     * @return \Spatie\Permission\Contracts\Permission
      * @throws PermissionDoesNotExist
      */
     public function filterPermission($permission, $guardName = null)
@@ -149,10 +150,10 @@ trait HasPermissions
     /**
      * Determine if the model may perform the given permission.
      *
-     * @param  string|int|\Spatie\Permission\Contracts\Permission  $permission
-     * @param  string|null  $guardName
-     * @return bool
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|null $guardName
      *
+     * @return bool
      * @throws PermissionDoesNotExist
      */
     public function hasPermissionTo($permission, $guardName = null): bool
@@ -169,8 +170,9 @@ trait HasPermissions
     /**
      * Validates a wildcard permission against all permissions of a user.
      *
-     * @param  string|int|\Spatie\Permission\Contracts\Permission  $permission
-     * @param  string|null  $guardName
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|null $guardName
+     *
      * @return bool
      */
     protected function hasWildcardPermission($permission, $guardName = null): bool
@@ -207,8 +209,9 @@ trait HasPermissions
     /**
      * An alias to hasPermissionTo(), but avoids throwing an exception.
      *
-     * @param  string|int|\Spatie\Permission\Contracts\Permission  $permission
-     * @param  string|null  $guardName
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
+     * @param string|null $guardName
+     *
      * @return bool
      */
     public function checkPermissionTo($permission, $guardName = null): bool
@@ -223,7 +226,8 @@ trait HasPermissions
     /**
      * Determine if the model has any of the given permissions.
      *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  ...$permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection ...$permissions
+     *
      * @return bool
      */
     public function hasAnyPermission(...$permissions): bool
@@ -242,15 +246,17 @@ trait HasPermissions
     /**
      * Determine if the model has all of the given permissions.
      *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  ...$permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection ...$permissions
+     *
      * @return bool
+     * @throws \Exception
      */
     public function hasAllPermissions(...$permissions): bool
     {
         $permissions = collect($permissions)->flatten();
 
         foreach ($permissions as $permission) {
-            if (! $this->checkPermissionTo($permission)) {
+            if (! $this->hasPermissionTo($permission)) {
                 return false;
             }
         }
@@ -261,7 +267,8 @@ trait HasPermissions
     /**
      * Determine if the model has, via roles, the given permission.
      *
-     * @param  \Spatie\Permission\Contracts\Permission  $permission
+     * @param \Spatie\Permission\Contracts\Permission $permission
+     *
      * @return bool
      */
     protected function hasPermissionViaRole(Permission $permission): bool
@@ -272,9 +279,9 @@ trait HasPermissions
     /**
      * Determine if the model has the given permission.
      *
-     * @param  string|int|\Spatie\Permission\Contracts\Permission  $permission
-     * @return bool
+     * @param string|int|\Spatie\Permission\Contracts\Permission $permission
      *
+     * @return bool
      * @throws PermissionDoesNotExist
      */
     public function hasDirectPermission($permission): bool
@@ -303,7 +310,7 @@ trait HasPermissions
         /** @var Collection $permissions */
         $permissions = $this->permissions;
 
-        if (method_exists($this, 'roles')) {
+        if ($this->roles) {
             $permissions = $permissions->merge($this->getPermissionsViaRoles());
         }
 
@@ -313,7 +320,8 @@ trait HasPermissions
     /**
      * Returns permissions ids as array keys
      *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
      * @return array
      */
     public function collectPermissions(...$permissions)
@@ -342,7 +350,8 @@ trait HasPermissions
     /**
      * Grant the given permission(s) to a role.
      *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
      * @return $this
      */
     public function givePermissionTo(...$permissions)
@@ -378,7 +387,8 @@ trait HasPermissions
     /**
      * Remove all current permissions and set the given ones.
      *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
      * @return $this
      */
     public function syncPermissions(...$permissions)
@@ -391,7 +401,8 @@ trait HasPermissions
     /**
      * Revoke the given permission(s).
      *
-     * @param  \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Permission[]|string|string[]  $permission
+     * @param \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Permission[]|string|string[] $permission
+     *
      * @return $this
      */
     public function revokePermissionTo($permission)
@@ -413,7 +424,8 @@ trait HasPermissions
     }
 
     /**
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  $permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection $permissions
+     *
      * @return \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Permission[]|\Illuminate\Support\Collection
      */
     protected function getStoredPermission($permissions)
@@ -443,7 +455,7 @@ trait HasPermissions
     }
 
     /**
-     * @param  \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Role  $roleOrPermission
+     * @param \Spatie\Permission\Contracts\Permission|\Spatie\Permission\Contracts\Role $roleOrPermission
      *
      * @throws \Spatie\Permission\Exceptions\GuardDoesNotMatch
      */
@@ -474,8 +486,7 @@ trait HasPermissions
 
     /**
      * Check if the model has All of the requested Direct permissions.
-     *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  ...$permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection ...$permissions
      * @return bool
      */
     public function hasAllDirectPermissions(...$permissions): bool
@@ -493,8 +504,7 @@ trait HasPermissions
 
     /**
      * Check if the model has Any of the requested Direct permissions.
-     *
-     * @param  string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection  ...$permissions
+     * @param string|int|array|\Spatie\Permission\Contracts\Permission|\Illuminate\Support\Collection ...$permissions
      * @return bool
      */
     public function hasAnyDirectPermission(...$permissions): bool

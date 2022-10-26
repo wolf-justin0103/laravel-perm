@@ -13,6 +13,13 @@ use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Traits\RefreshesPermissionCache;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $guard_name
+ * @property ?\Illuminate\Support\Carbon $created_at
+ * @property ?\Illuminate\Support\Carbon $updated_at
+ */
 class Permission extends Model implements PermissionContract
 {
     use HasRoles;
@@ -77,11 +84,12 @@ class Permission extends Model implements PermissionContract
     /**
      * Find a permission by its name (and optionally guardName).
      *
-     * @param  string  $name
-     * @param  string|null  $guardName
-     * @return \Spatie\Permission\Contracts\Permission
+     * @param string $name
+     * @param string|null $guardName
      *
      * @throws \Spatie\Permission\Exceptions\PermissionDoesNotExist
+     *
+     * @return \Spatie\Permission\Contracts\Permission
      */
     public static function findByName(string $name, $guardName = null): PermissionContract
     {
@@ -97,11 +105,12 @@ class Permission extends Model implements PermissionContract
     /**
      * Find a permission by its id (and optionally guardName).
      *
-     * @param  int  $id
-     * @param  string|null  $guardName
-     * @return \Spatie\Permission\Contracts\Permission
+     * @param int $id
+     * @param string|null $guardName
      *
      * @throws \Spatie\Permission\Exceptions\PermissionDoesNotExist
+     *
+     * @return \Spatie\Permission\Contracts\Permission
      */
     public static function findById(int $id, $guardName = null): PermissionContract
     {
@@ -118,8 +127,9 @@ class Permission extends Model implements PermissionContract
     /**
      * Find or create permission by its name (and optionally guardName).
      *
-     * @param  string  $name
-     * @param  string|null  $guardName
+     * @param string $name
+     * @param string|null $guardName
+     *
      * @return \Spatie\Permission\Contracts\Permission
      */
     public static function findOrCreate(string $name, $guardName = null): PermissionContract
@@ -137,8 +147,9 @@ class Permission extends Model implements PermissionContract
     /**
      * Get the current cached permissions.
      *
-     * @param  array  $params
-     * @param  bool  $onlyOne
+     * @param array $params
+     * @param bool $onlyOne
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     protected static function getPermissions(array $params = [], bool $onlyOne = false): Collection
@@ -151,7 +162,8 @@ class Permission extends Model implements PermissionContract
     /**
      * Get the current cached first permission.
      *
-     * @param  array  $params
+     * @param array $params
+     *
      * @return \Spatie\Permission\Contracts\Permission
      */
     protected static function getPermission(array $params = []): ?PermissionContract
