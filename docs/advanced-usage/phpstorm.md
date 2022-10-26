@@ -5,9 +5,6 @@ weight: 8
 
 # Extending PhpStorm 
 
-> **Note**
-> When using Laravel Idea plugin all directives are automatically added.
-
 You may wish to extend PhpStorm to support Blade Directives of this package.
 
 1. In PhpStorm, open Preferences, and navigate to **Languages and Frameworks -> PHP -> Blade**
@@ -19,16 +16,10 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 **role**
 
 - has parameter = YES
-- Prefix: `<?php if(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasRole', {`
-- Suffix: `})): ?>`
+- Prefix: `<?php if(auth()->check() && auth()->user()->hasRole(`
+- Suffix: `)); ?>`
 
 --
-
-**elserole**
-
-- has parameter = YES
-- Prefix: `<?php elseif(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasRole', {`
-- Suffix: `})): ?>`
 
 **endrole**
 
@@ -41,8 +32,8 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 **hasrole**
 
 - has parameter = YES
-- Prefix: `<?php if(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasRole', {`
-- Suffix: `})): ?>`
+- Prefix: `<?php if(auth()->check() && auth()->user()->hasRole(`
+- Suffix: `)); ?>`
 
 --
 
@@ -57,8 +48,8 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 **hasanyrole**
 
 - has parameter = YES
-- Prefix: `<?php if(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasAnyRole', {`
-- Suffix: `})): ?>`
+- Prefix: `<?php if(auth()->check() && auth()->user()->hasAnyRole(`
+- Suffix: `)); ?>`
 
 --
 
@@ -73,8 +64,8 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 **hasallroles**
 
 - has parameter = YES
-- Prefix: `<?php if(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasAllRoles', {`
-- Suffix: `})): ?>`
+- Prefix: `<?php if(auth()->check() && auth()->user()->hasAllRoles(`
+- Suffix: `)); ?>`
 
 --
 
@@ -89,8 +80,8 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 **unlessrole**
 
 - has parameter = YES
-- Prefix: `<?php if(! \\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasRole', {`
-- Suffix: `})): ?>`
+- Prefix: `<?php if(auth()->check() && !auth()->user()->hasRole(`
+- Suffix: `)); ?>`
 
 --
 
@@ -101,17 +92,3 @@ You may wish to extend PhpStorm to support Blade Directives of this package.
 - Suffix: blank
 
 --
-
-**hasexactroles**
-
-- has parameter = YES
-- Prefix: `<?php if(\\Spatie\\Permission\\PermissionServiceProvider::bladeMethodWrapper('hasExactRoles', {`
-- Suffix: `})): ?>`
-
---
-
-**endhasexactroles**
-
-- has parameter = NO
-- Prefix: blank
-- Suffix: blank
