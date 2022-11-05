@@ -310,7 +310,7 @@ trait HasPermissions
         /** @var Collection $permissions */
         $permissions = $this->permissions;
 
-        if (method_exists($this, 'roles')) {
+        if ($this->roles) {
             $permissions = $permissions->merge($this->getPermissionsViaRoles());
         }
 
