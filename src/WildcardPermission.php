@@ -3,10 +3,9 @@
 namespace Spatie\Permission;
 
 use Illuminate\Support\Collection;
-use Spatie\Permission\Contracts\Wildcard;
 use Spatie\Permission\Exceptions\WildcardPermissionNotProperlyFormatted;
 
-class WildcardPermission implements Wildcard
+class WildcardPermission
 {
     /** @var string */
     public const WILDCARD_TOKEN = '*';
