@@ -273,11 +273,6 @@ class PermissionRegistrar
         return $this->cache->getStore();
     }
 
-    protected function getPermissionsWithRoles(): Collection
-    {
-        return $this->getPermissionClass()->select()->with('roles')->get();
-    }
-
     /**
      * Changes array keys with alias
      *
@@ -315,7 +310,7 @@ class PermissionRegistrar
     {
         $this->except = config('permission.cache.column_names_except', ['created_at', 'updated_at', 'deleted_at']);
 
-        $permissions = $this->getPermissionsWithRoles()
+        $permissions = $this->getPermissionClass()->select()->with('roles')->get()
             ->map(function ($permission) {
                 if (! $this->alias) {
                     $this->aliasModelFields($permission);
