@@ -24,10 +24,10 @@ trait HasRoles
                 return;
             }
 
-            $teams = PermissionRegistrar::$teams;
-            PermissionRegistrar::$teams = false;
+            $teams = app(PermissionRegistrar::class)->teams;
+            app(PermissionRegistrar::class)->teams = false;
             $model->roles()->detach();
-            PermissionRegistrar::$teams = $teams;
+            app(PermissionRegistrar::class)->teams = $teams;
         });
     }
 
@@ -50,16 +50,16 @@ trait HasRoles
             'model',
             config('permission.table_names.model_has_roles'),
             config('permission.column_names.model_morph_key'),
-            PermissionRegistrar::$pivotRole
+            app(PermissionRegistrar::class)->pivotRole
         );
 
-        if (! PermissionRegistrar::$teams) {
+        if (! app(PermissionRegistrar::class)->teams) {
             return $relation;
         }
 
-        return $relation->wherePivot(PermissionRegistrar::$teamsKey, getPermissionsTeamId())
+        return $relation->wherePivot(app(PermissionRegistrar::class)->teamsKey, getPermissionsTeamId())
             ->where(function ($q) {
-                $teamField = config('permission.table_names.roles').'.'.PermissionRegistrar::$teamsKey;
+                $teamField = config('permission.table_names.roles').'.'. app(PermissionRegistrar::class)->teamsKey;
                 $q->whereNull($teamField)->orWhere($teamField, getPermissionsTeamId());
             });
     }
@@ -83,7 +83,7 @@ trait HasRoles
                 return $role;
             }
 
-            $method = is_numeric($role) || PermissionRegistrar::isUid($role) ? 'findById' : 'findByName';
+            $method = is_numeric($role) ? 'findById' : 'findByName';
 
             return $this->getRoleClass()->{$method}($role, $guard ?: $this->getDefaultGuardName());
         }, Arr::wrap($roles));
@@ -117,8 +117,8 @@ trait HasRoles
 
                 $this->ensureModelSharesGuard($role);
 
-                $array[$role->getKey()] = PermissionRegistrar::$teams && ! is_a($this, Permission::class) ?
-                    [PermissionRegistrar::$teamsKey => getPermissionsTeamId()] : [];
+                $array[$role->getKey()] = app(PermissionRegistrar::class)->teams && ! is_a($this, Permission::class) ?
+                    [app(PermissionRegistrar::class)->teamsKey => getPermissionsTeamId()] : [];
 
                 return $array;
             }, []);
@@ -195,13 +195,13 @@ trait HasRoles
             $roles = $this->convertPipeToArray($roles);
         }
 
-        if (is_string($roles) && ! PermissionRegistrar::isUid($roles)) {
+        if (is_string($roles)) {
             return $guard
                 ? $this->roles->where('guard_name', $guard)->contains('name', $roles)
                 : $this->roles->contains('name', $roles);
         }
 
-        if (is_int($roles) || is_string($roles)) {
+        if (is_int($roles)) {
             $roleClass = $this->getRoleClass();
             $key = (new $roleClass())->getKeyName();
 
@@ -325,7 +325,7 @@ trait HasRoles
     {
         $roleClass = $this->getRoleClass();
 
-        if (is_numeric($role) || PermissionRegistrar::isUid($role)) {
+        if (is_numeric($role)) {
             return $roleClass->findById($role, $this->getDefaultGuardName());
         }
 

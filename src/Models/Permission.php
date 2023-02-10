@@ -62,8 +62,8 @@ class Permission extends Model implements PermissionContract
         return $this->belongsToMany(
             config('permission.models.role'),
             config('permission.table_names.role_has_permissions'),
-            PermissionRegistrar::$pivotPermission,
-            PermissionRegistrar::$pivotRole
+            app(PermissionRegistrar::class)->pivotPermission,
+            app(PermissionRegistrar::class)->pivotRole
         );
     }
 
@@ -76,7 +76,7 @@ class Permission extends Model implements PermissionContract
             getModelForGuard($this->attributes['guard_name'] ?? config('auth.defaults.guard')),
             'model',
             config('permission.table_names.model_has_permissions'),
-            PermissionRegistrar::$pivotPermission,
+            app(PermissionRegistrar::class)->pivotPermission,
             config('permission.column_names.model_morph_key')
         );
     }
@@ -104,13 +104,13 @@ class Permission extends Model implements PermissionContract
     /**
      * Find a permission by its id (and optionally guardName).
      *
-     * @param  int|string  $id
+     * @param  int  $id
      * @param  string|null  $guardName
      * @return \Spatie\Permission\Contracts\Permission
      *
      * @throws \Spatie\Permission\Exceptions\PermissionDoesNotExist
      */
-    public static function findById($id, $guardName = null): PermissionContract
+    public static function findById(int $id, $guardName = null): PermissionContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
         $permission = static::getPermission([(new static())->getKeyName() => $id, 'guard_name' => $guardName]);
